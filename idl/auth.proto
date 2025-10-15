@@ -1,0 +1,38 @@
+syntax="proto3";
+
+package auth;
+
+option go_package="/auth";
+
+message GenerateTokenRequest {
+  int64 userID = 1;
+}
+
+message GenerateTokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+message ParseTokenRequest {
+  string token = 1;
+}
+
+message ParseTokenResponse {
+  int64 userID = 1;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 userID = 3;
+}
+
+service AuthService {
+  rpc GenerateToken(GenerateTokenRequest) returns (GenerateTokenResponse);
+  rpc ParseToken(ParseTokenRequest) returns (ParseTokenResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+}

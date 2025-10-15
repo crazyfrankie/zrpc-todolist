@@ -1,0 +1,20 @@
+error_code:
+  - name: ErrUserInvalidParam
+    code: 101
+    message: "invalid parameter : {msg}"
+    no_affect_stability: true
+
+  - name: ErrUserInfoInvalid
+    code: 102
+    message: "invalid email or password, please try again."
+    no_affect_stability: true
+
+  - name: ErrUserEmailAlreadyExist
+    code: 103
+    message: "email already exist : {email}"
+    no_affect_stability: true
+
+  - name: ErrUserUniqueNameAlreadyExist
+    code: 104
+    message: "unique name already exist : {name}"
+    no_affect_stability: true

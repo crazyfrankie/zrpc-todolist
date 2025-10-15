@@ -1,0 +1,5 @@
+error_code:
+  - name: ErrTokenInvalid
+    code: 101
+    message: token is invalid
+    no_affect_stability: true

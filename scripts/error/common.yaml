@@ -1,0 +1,5 @@
+error_code:
+  - name: ErrNoPermission
+    code: 101
+    message: "no permission, ownerID: {owner_id}"
+    no_affect_stability: true

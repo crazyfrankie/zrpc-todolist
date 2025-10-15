@@ -1,0 +1,31 @@
+# GoIM Project Error Code Configuration
+# Error code format: 6-digit decimal number
+# Format: ABBCCC
+# A: App code (1 digit)
+# BB: Business domain code (2 digits)  
+# CCC: Sub error code (3 digits)
+
+version: 'v1'
+
+# Error code configuration
+error_code:
+  # Total length of the error code
+  total_length: 6
+  # Length of app code
+  app_length: 1
+  # Length of business code
+  biz_length: 2
+  # Length of sub code
+  sub_length: 3
+
+app:
+  - name: goim
+    code: 1  # App code for robot-web project
+    business:
+      - name: user
+        code: 1
+      - name: auth
+        code: 2
+      - name: common
+        code: 3
+

@@ -1,0 +1,71 @@
+syntax="proto3";
+
+package user;
+
+option go_package = "/user";
+
+message User {
+  int64 userID = 1;
+  string name = 2;
+  string avatar_url = 3;
+  string access_token = 4;
+  string refresh_token = 5;
+  int64 user_create_time = 6;
+}
+
+message RegisterRequest {
+  string name = 1;
+  string password = 2;
+}
+
+message RegisterResponse {
+  User data = 1;
+}
+
+message LoginRequest {
+  string name = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  User data = 1;
+}
+
+message GetUserInfoRequest {
+}
+
+message GetUserInfoResponse {
+  User data = 1;
+}
+
+message UpdateAvatarRequest {
+  bytes avatar = 1;
+  string mime_type = 2;
+}
+
+message UpdateAvatarResponse {
+  string avatar_url = 1;
+}
+
+message ResetPasswordRequest {
+  string name = 1;
+  string password = 2;
+}
+
+message ResetPasswordResponse {
+
+}
+
+message LogoutRequest {}
+
+message LogoutResponse {}
+
+service UserService {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse);
+  rpc UpdateAvatar(UpdateAvatarRequest) returns (UpdateAvatarResponse);
+  rpc ResetPassword(ResetPasswordRequest) returns(ResetPasswordResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+}
+
