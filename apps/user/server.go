@@ -4,16 +4,14 @@ import (
 	"context"
 
 	"github.com/crazyfrankie/zrpc"
-	"github.com/crazyfrankie/zrpc/registry"
-
 	"github.com/crazyfrankie/zrpc-todolist/apps/user/application"
 	"github.com/crazyfrankie/zrpc-todolist/apps/user/domain/repository"
 	"github.com/crazyfrankie/zrpc-todolist/apps/user/domain/service"
 	"github.com/crazyfrankie/zrpc-todolist/protocol/user"
 )
 
-func Start(ctx context.Context, client *registry.TcpClient, srv zrpc.ServiceRegistrar) error {
-	basic, err := application.Init(ctx, client)
+func Start(ctx context.Context, srv zrpc.ServiceRegistrar) error {
+	basic, err := application.Init(ctx)
 	if err != nil {
 		return err
 	}

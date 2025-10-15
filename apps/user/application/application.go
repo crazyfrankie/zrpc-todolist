@@ -2,14 +2,15 @@ package application
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"time"
 
 	"github.com/crazyfrankie/zrpc"
-	"github.com/crazyfrankie/zrpc/registry"
 	"gorm.io/gorm"
 
 	"github.com/crazyfrankie/zrpc-todolist/infra/contract/idgen"
 	"github.com/crazyfrankie/zrpc-todolist/infra/contract/storage"
-	"github.com/crazyfrankie/zrpc-todolist/infra/impl/balancer"
 	"github.com/crazyfrankie/zrpc-todolist/infra/impl/cache/redis"
 	idgenimpl "github.com/crazyfrankie/zrpc-todolist/infra/impl/idgen"
 	"github.com/crazyfrankie/zrpc-todolist/infra/impl/mysql"
@@ -25,7 +26,7 @@ type BasicServices struct {
 	AuthCli auth.AuthServiceClient
 }
 
-func Init(ctx context.Context, client *registry.TcpClient) (*BasicServices, error) {
+func Init(ctx context.Context) (*BasicServices, error) {
 	basic := &BasicServices{}
 	var err error
 
@@ -41,12 +42,7 @@ func Init(ctx context.Context, client *registry.TcpClient) (*BasicServices, erro
 		return nil, err
 	}
 
-	services, err := client.GetService(consts.AuthServiceName)
-	if err != nil {
-		return nil, err
-	}
-
-	authCC, err := getConn(ctx, services)
+	authCC, err := getConn(consts.AuthServiceName)
 	if err != nil {
 		return nil, err
 	}
@@ -61,12 +57,18 @@ func Init(ctx context.Context, client *registry.TcpClient) (*BasicServices, erro
 	return basic, nil
 }
 
-func getConn(ctx context.Context, services []string) (zrpc.ClientInterface, error) {
-	bl := balancer.NewRoundRobinBalancer(services)
-	addr, err := bl.Next(ctx)
-	if err != nil {
-		return nil, err
+func getConn(serviceName string) (zrpc.ClientInterface, error) {
+	target := fmt.Sprintf("registry:///%s", serviceName)
+
+	registryIP := os.Getenv("REGISTRY_IP")
+
+	clientOptions := []zrpc.ClientOption{
+		zrpc.DialWithTCPKeepAlive(15 * time.Second),
+		zrpc.DialWithIdleTimeout(30 * time.Second),
+		zrpc.DialWithHeartbeatInterval(30 * time.Second),
+		zrpc.DialWithHeartbeatTimeout(5 * time.Second),
+		zrpc.DialWithRegistryAddress(registryIP),
 	}
 
-	return zrpc.NewClient(addr)
+	return zrpc.NewClient(target, clientOptions...)
 }

@@ -119,7 +119,7 @@ func (u *UserApplicationService) UpdateAvatar(ctx context.Context, req *user.Upd
 }
 
 func (u *UserApplicationService) ResetPassword(ctx context.Context, req *user.ResetPasswordRequest) (*user.ResetPasswordResponse, error) {
-	err := u.userDomain.ResetPassword(ctx, req.GetEmail(), req.GetPassword())
+	err := u.userDomain.ResetPassword(ctx, req.GetName(), req.GetPassword())
 	if err != nil {
 		return nil, err
 	}

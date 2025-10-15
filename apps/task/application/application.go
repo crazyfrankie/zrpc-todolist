@@ -3,7 +3,6 @@ package application
 import (
 	"context"
 
-	"github.com/crazyfrankie/zrpc/registry"
 	"gorm.io/gorm"
 
 	"github.com/crazyfrankie/zrpc-todolist/infra/contract/idgen"
@@ -17,7 +16,7 @@ type BasicServices struct {
 	IDGen idgen.IDGenerator
 }
 
-func Init(ctx context.Context, client *registry.TcpClient) (*BasicServices, error) {
+func Init(ctx context.Context) (*BasicServices, error) {
 	basic := &BasicServices{}
 	var err error
 

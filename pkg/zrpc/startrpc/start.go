@@ -16,7 +16,7 @@ import (
 )
 
 func Start(ctx context.Context, listenIP, registerIP, listenPort, metricAddr, registryIP, rpcRegisterName string,
-	rpcStart func(ctx context.Context, client *registry.TcpClient, srv zrpc.ServiceRegistrar) error,
+	rpcStart func(ctx context.Context, srv zrpc.ServiceRegistrar) error,
 	opts ...zrpc.ServerOption) error {
 
 	client := registry.NewTcpClient(registryIP)
@@ -63,7 +63,7 @@ func Start(ctx context.Context, listenIP, registerIP, listenPort, metricAddr, re
 
 		g.Add(func() error {
 			// Register service
-			if err := client.Register(rpcRegisterName, rpcListenAddr, nil); err != nil {
+			if err := client.RegisterWithKeepAlive(rpcRegisterName, rpcListenAddr, nil, 120); err != nil {
 				return fmt.Errorf("rpc register %s: %w", rpcRegisterName, err)
 			}
 
@@ -92,7 +92,7 @@ func Start(ctx context.Context, listenIP, registerIP, listenPort, metricAddr, re
 		})
 	}
 
-	if err := rpcStart(ctx, client, &zrpcServiceRegistrar{onRegisterService: onRegisterService}); err != nil {
+	if err := rpcStart(ctx, &zrpcServiceRegistrar{onRegisterService: onRegisterService}); err != nil {
 		return err
 	}
 

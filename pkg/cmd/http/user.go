@@ -35,8 +35,7 @@ func (u *UserCmd) Exec() error {
 
 func (u *UserCmd) runE() error {
 	listenAddr := os.Getenv("LISTEN_ADDR")
-	metricAddr := os.Getenv("METRIC_ADDR")
-	registryIP := os.Getenv("REGISTRY_IP")
+	//metricAddr := os.Getenv("METRIC_ADDR")
 
-	return starthttp.Start(context.Background(), listenAddr, metricAddr, registryIP, user.Start, time.Second*5)
+	return starthttp.Start(context.Background(), listenAddr, "", user.Start, time.Second*5)
 }

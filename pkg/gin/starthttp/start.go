@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/crazyfrankie/zrpc/registry"
 	"github.com/oklog/run"
 
 	"github.com/crazyfrankie/zrpc-todolist/pkg/lang/signal"
@@ -20,8 +19,7 @@ func init() {
 	metrics.RegisterBFF()
 }
 
-func Start(ctx context.Context, listenAddr, metricAddr, registryIP string, initFn func(ctx context.Context, client *registry.TcpClient) (http.Handler, error), shutdownTimeout time.Duration) error {
-	client := registry.NewTcpClient(registryIP)
+func Start(ctx context.Context, listenAddr, metricAddr string, initFn func(ctx context.Context) (http.Handler, error), shutdownTimeout time.Duration) error {
 
 	g := &run.Group{}
 
@@ -32,18 +30,20 @@ func Start(ctx context.Context, listenAddr, metricAddr, registryIP string, initF
 
 	})
 
-	g.Add(func() error {
-		listener, err := net.Listen("tcp", metricAddr)
-		if err != nil {
-			return err
-		}
+	if metricAddr != "" {
+		g.Add(func() error {
+			listener, err := net.Listen("tcp", metricAddr)
+			if err != nil {
+				return err
+			}
 
-		return metrics.Start(listener)
-	}, func(err error) {
+			return metrics.Start(listener)
+		}, func(err error) {
 
-	})
+		})
+	}
 
-	engine, err := initFn(ctx, client)
+	engine, err := initFn(ctx)
 	if err != nil {
 		return err
 	}

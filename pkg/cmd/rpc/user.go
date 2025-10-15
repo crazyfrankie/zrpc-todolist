@@ -10,7 +10,6 @@ import (
 	"github.com/crazyfrankie/zrpc-todolist/apps/user"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/cmd"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/lang/program"
-	"github.com/crazyfrankie/zrpc-todolist/pkg/metrics"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/zrpc/interceptor"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/zrpc/startrpc"
 	"github.com/crazyfrankie/zrpc-todolist/types/consts"
@@ -39,12 +38,12 @@ func (u *UserCmd) runE() error {
 	listenIP := os.Getenv("LISTEN_IP")
 	registerIP := os.Getenv("REGISTER_IP")
 	listenPort := os.Getenv("LISTEN_PORT")
-	metricAddr := os.Getenv("METRIC_ADDR")
+	//metricAddr := os.Getenv("METRIC_ADDR")
 	registryIP := os.Getenv("REGISTRY_IP")
 
-	metrics.RegistryUser()
+	//metrics.RegistryUser()
 
-	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, metricAddr, registryIP, consts.UserServiceName, user.Start, userGrpcServerOption()...)
+	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, "", registryIP, consts.UserServiceName, user.Start, userGrpcServerOption()...)
 }
 
 func userGrpcServerOption() []zrpc.ServerOption {

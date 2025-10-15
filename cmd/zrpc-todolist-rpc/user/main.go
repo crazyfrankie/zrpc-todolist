@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	if err := rpc.NewTaskCmd().Exec(); err != nil {
+	if err := rpc.NewUserCmd().Exec(); err != nil {
 		program.ExitWithError(err)
 	}
 }

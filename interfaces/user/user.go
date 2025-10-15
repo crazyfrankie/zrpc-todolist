@@ -2,13 +2,14 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/crazyfrankie/zrpc"
-	"github.com/crazyfrankie/zrpc/registry"
 	"github.com/gin-gonic/gin"
 
-	"github.com/crazyfrankie/zrpc-todolist/infra/impl/balancer"
 	"github.com/crazyfrankie/zrpc-todolist/interfaces/user/handler"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/gin/middleware"
 	"github.com/crazyfrankie/zrpc-todolist/protocol/auth"
@@ -17,22 +18,14 @@ import (
 )
 
 // Start returns gin.Engine.
-func Start(ctx context.Context, client *registry.TcpClient) (http.Handler, error) {
+func Start(ctx context.Context) (http.Handler, error) {
 	srv := gin.Default()
 
-	userService, err := client.GetService(consts.UserServiceName)
+	userCC, err := getConn(consts.UserServiceName)
 	if err != nil {
 		return nil, err
 	}
-	authServices, err := client.GetService(consts.AuthServiceName)
-	if err != nil {
-		return nil, err
-	}
-	userCC, err := getConn(ctx, userService)
-	if err != nil {
-		return nil, err
-	}
-	authCC, err := getConn(ctx, authServices)
+	authCC, err := getConn(consts.AuthServiceName)
 	if err != nil {
 		return nil, err
 	}
@@ -53,12 +46,18 @@ func Start(ctx context.Context, client *registry.TcpClient) (http.Handler, error
 	return srv, nil
 }
 
-func getConn(ctx context.Context, services []string) (zrpc.ClientInterface, error) {
-	bl := balancer.NewRoundRobinBalancer(services)
-	addr, err := bl.Next(ctx)
-	if err != nil {
-		return nil, err
+func getConn(serviceName string) (zrpc.ClientInterface, error) {
+	target := fmt.Sprintf("registry:///%s", serviceName)
+
+	registryIP := os.Getenv("REGISTRY_IP")
+
+	clientOptions := []zrpc.ClientOption{
+		zrpc.DialWithTCPKeepAlive(15 * time.Second),
+		zrpc.DialWithIdleTimeout(30 * time.Second),
+		zrpc.DialWithHeartbeatInterval(40 * time.Second),
+		zrpc.DialWithHeartbeatTimeout(5 * time.Second),
+		zrpc.DialWithRegistryAddress(registryIP),
 	}
 
-	return zrpc.NewClient(addr)
+	return zrpc.NewClient(target, clientOptions...)
 }
