@@ -16,7 +16,7 @@ import (
 	"github.com/crazyfrankie/zrpc-todolist/types/consts"
 )
 
-func Start(ctx context.Context, client *registry.Registry) (http.Handler, error) {
+func Start(ctx context.Context, client *registry.TcpClient) (http.Handler, error) {
 	srv := gin.Default()
 
 	taskServices, err := client.GetService(consts.AuthServiceName)

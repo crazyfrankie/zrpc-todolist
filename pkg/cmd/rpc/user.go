@@ -40,10 +40,11 @@ func (u *UserCmd) runE() error {
 	registerIP := os.Getenv("REGISTER_IP")
 	listenPort := os.Getenv("LISTEN_PORT")
 	metricAddr := os.Getenv("METRIC_ADDR")
+	registryIP := os.Getenv("REGISTRY_IP")
 
 	metrics.RegistryUser()
 
-	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, metricAddr, consts.UserServiceName, user.Start, userGrpcServerOption()...)
+	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, metricAddr, registryIP, consts.UserServiceName, user.Start, userGrpcServerOption()...)
 }
 
 func userGrpcServerOption() []zrpc.ServerOption {

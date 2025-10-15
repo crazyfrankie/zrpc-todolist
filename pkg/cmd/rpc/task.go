@@ -40,10 +40,11 @@ func (u *TaskCmd) runE() error {
 	registerIP := os.Getenv("REGISTER_IP")
 	listenPort := os.Getenv("LISTEN_PORT")
 	metricAddr := os.Getenv("METRIC_ADDR")
+	registryIP := os.Getenv("REGISTRY_IP")
 
 	metrics.RegistryUser()
 
-	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, metricAddr, consts.TaskServiceName, task.Start, userGrpcServerOption()...)
+	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, metricAddr, registryIP, consts.TaskServiceName, task.Start, taskGrpcServerOption()...)
 }
 
 func taskGrpcServerOption() []zrpc.ServerOption {

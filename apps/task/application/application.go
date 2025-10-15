@@ -17,7 +17,7 @@ type BasicServices struct {
 	IDGen idgen.IDGenerator
 }
 
-func Init(ctx context.Context, client *registry.Registry) (*BasicServices, error) {
+func Init(ctx context.Context, client *registry.TcpClient) (*BasicServices, error) {
 	basic := &BasicServices{}
 	var err error
 

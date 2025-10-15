@@ -25,7 +25,7 @@ type BasicServices struct {
 	AuthCli auth.AuthServiceClient
 }
 
-func Init(ctx context.Context, client *registry.Registry) (*BasicServices, error) {
+func Init(ctx context.Context, client *registry.TcpClient) (*BasicServices, error) {
 	basic := &BasicServices{}
 	var err error
 

@@ -15,11 +15,11 @@ import (
 	"github.com/crazyfrankie/zrpc-todolist/pkg/metrics"
 )
 
-func Start(ctx context.Context, listenIP, registerIP, listenPort, rpcRegisterName, metricAddr string,
-	rpcStart func(ctx context.Context, client *registry.Registry, srv zrpc.ServiceRegistrar) error,
+func Start(ctx context.Context, listenIP, registerIP, listenPort, metricAddr, registryIP, rpcRegisterName string,
+	rpcStart func(ctx context.Context, client *registry.TcpClient, srv zrpc.ServiceRegistrar) error,
 	opts ...zrpc.ServerOption) error {
 
-	client := registry.NewRegistry(time.Second * 10)
+	client := registry.NewTcpClient(registryIP)
 
 	g := &run.Group{}
 

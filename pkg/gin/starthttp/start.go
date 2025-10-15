@@ -20,9 +20,9 @@ func init() {
 	metrics.RegisterBFF()
 }
 
-func Start(ctx context.Context, listenAddr, metricAddr string, initFn func(ctx context.Context, client *registry.Registry) (http.Handler, error), shutdownTimeout time.Duration) error {
-	client := registry.NewRegistry(time.Second * 10)
-	
+func Start(ctx context.Context, listenAddr, metricAddr, registryIP string, initFn func(ctx context.Context, client *registry.TcpClient) (http.Handler, error), shutdownTimeout time.Duration) error {
+	client := registry.NewTcpClient(registryIP)
+
 	g := &run.Group{}
 
 	// Signal handler

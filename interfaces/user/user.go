@@ -17,7 +17,7 @@ import (
 )
 
 // Start returns gin.Engine.
-func Start(ctx context.Context, client *registry.Registry) (http.Handler, error) {
+func Start(ctx context.Context, client *registry.TcpClient) (http.Handler, error) {
 	srv := gin.Default()
 
 	userService, err := client.GetService(consts.UserServiceName)
