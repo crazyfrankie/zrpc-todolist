@@ -18,6 +18,7 @@ const (
 	UserService_UpdateAvatar_FullMethodName  = "user.UserService/UpdateAvatar"
 	UserService_ResetPassword_FullMethodName = "user.UserService/ResetPassword"
 	UserService_Logout_FullMethodName        = "user.UserService/Logout"
+	UserService_RefreshToken_FullMethodName  = "user.UserService/RefreshToken"
 )
 
 // UserServiceClient is the API for UserService service.
@@ -29,6 +30,7 @@ type UserServiceClient interface {
 	UpdateAvatar(ctx context.Context, in *UpdateAvatarRequest) (*UpdateAvatarResponse, error)
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest) (*ResetPasswordResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest) (*LogoutResponse, error)
+	RefreshToken(ctx context.Context, in *RefreshTokenRequest) (*RefreshTokenResponse, error)
 }
 
 type userServiceClient struct {
@@ -93,6 +95,15 @@ func (c *userServiceClient) Logout(ctx context.Context, in *LogoutRequest) (*Log
 	return out, nil
 }
 
+func (c *userServiceClient) RefreshToken(ctx context.Context, in *RefreshTokenRequest) (*RefreshTokenResponse, error) {
+	out := new(RefreshTokenResponse)
+	err := c.cli.Invoke(ctx, UserService_RefreshToken_FullMethodName, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -103,6 +114,7 @@ type UserServiceServer interface {
 	UpdateAvatar(context.Context, *UpdateAvatarRequest) (*UpdateAvatarResponse, error)
 	ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
+	RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -130,6 +142,9 @@ func (UnimplementedUserServiceServer) ResetPassword(context.Context, *ResetPassw
 }
 func (UnimplementedUserServiceServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
 	return nil, fmt.Errorf("method Logout not implemented")
+}
+func (UnimplementedUserServiceServer) RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error) {
+	return nil, fmt.Errorf("method RefreshToken not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -260,6 +275,24 @@ func _UserService_Logout_Handler(srv interface{}, ctx context.Context, dec func(
 	return middleware(ctx, in, info, handler)
 }
 
+func _UserService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, middleware zrpc.ServerMiddleware) (interface{}, error) {
+	in := new(RefreshTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if middleware == nil {
+		return srv.(UserServiceServer).RefreshToken(ctx, in)
+	}
+	info := &zrpc.ServerInfo{
+		Server:     srv,
+		FullMethod: UserService_RefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RefreshToken(ctx, req.(*RefreshTokenRequest))
+	}
+	return middleware(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the zrpc.ServiceDesc for UserService service.
 // It's only intended for direct use withzrpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -290,6 +323,10 @@ var UserService_ServiceDesc = zrpc.ServiceDesc{
 		{
 			MethodName: "Logout",
 			Handler:    _UserService_Logout_Handler,
+		},
+		{
+			MethodName: "RefreshToken",
+			Handler:    _UserService_RefreshToken_Handler,
 		},
 	},
 	Metadata: "idl/user.proto",

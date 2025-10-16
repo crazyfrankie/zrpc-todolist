@@ -138,6 +138,18 @@ func (u *UserApplicationService) Logout(ctx context.Context, req *user.LogoutReq
 	return &user.LogoutResponse{}, nil
 }
 
+func (u *UserApplicationService) RefreshToken(ctx context.Context, req *user.RefreshTokenRequest) (*user.RefreshTokenResponse, error) {
+	res, err := u.authClient.RefreshToken(ctx, &auth.RefreshTokenRequest{RefreshToken: req.GetRefreshToken()})
+	if err != nil {
+		return nil, err
+	}
+
+	return &user.RefreshTokenResponse{
+		AccessToken:  res.GetAccessToken(),
+		RefreshToken: res.GetRefreshToken(),
+	}, nil
+}
+
 func userDO2DTO(userDo *entity.User) *user.User {
 	return &user.User{
 		UserID:    userDo.UserID,

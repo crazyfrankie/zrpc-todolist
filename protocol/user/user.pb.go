@@ -633,6 +633,102 @@ func (*LogoutResponse) Descriptor() ([]byte, []int) {
 	return file_idl_user_proto_rawDescGZIP(), []int{12}
 }
 
+type RefreshTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenRequest) Reset() {
+	*x = RefreshTokenRequest{}
+	mi := &file_idl_user_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenRequest) ProtoMessage() {}
+
+func (x *RefreshTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_user_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenRequest.ProtoReflect.Descriptor instead.
+func (*RefreshTokenRequest) Descriptor() ([]byte, []int) {
+	return file_idl_user_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *RefreshTokenRequest) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+type RefreshTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenResponse) Reset() {
+	*x = RefreshTokenResponse{}
+	mi := &file_idl_user_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenResponse) ProtoMessage() {}
+
+func (x *RefreshTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_user_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenResponse.ProtoReflect.Descriptor instead.
+func (*RefreshTokenResponse) Descriptor() ([]byte, []int) {
+	return file_idl_user_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *RefreshTokenResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *RefreshTokenResponse) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
 var File_idl_user_proto protoreflect.FileDescriptor
 
 const file_idl_user_proto_rawDesc = "" +
@@ -673,14 +769,20 @@ const file_idl_user_proto_rawDesc = "" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"\x17\n" +
 	"\x15ResetPasswordResponse\"\x0f\n" +
 	"\rLogoutRequest\"\x10\n" +
-	"\x0eLogoutResponse2\x84\x03\n" +
+	"\x0eLogoutResponse\":\n" +
+	"\x13RefreshTokenRequest\x12#\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"^\n" +
+	"\x14RefreshTokenResponse\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken2\xcb\x03\n" +
 	"\vUserService\x129\n" +
 	"\bRegister\x12\x15.user.RegisterRequest\x1a\x16.user.RegisterResponse\x120\n" +
 	"\x05Login\x12\x12.user.LoginRequest\x1a\x13.user.LoginResponse\x12B\n" +
 	"\vGetUserInfo\x12\x18.user.GetUserInfoRequest\x1a\x19.user.GetUserInfoResponse\x12E\n" +
 	"\fUpdateAvatar\x12\x19.user.UpdateAvatarRequest\x1a\x1a.user.UpdateAvatarResponse\x12H\n" +
 	"\rResetPassword\x12\x1a.user.ResetPasswordRequest\x1a\x1b.user.ResetPasswordResponse\x123\n" +
-	"\x06Logout\x12\x13.user.LogoutRequest\x1a\x14.user.LogoutResponseB\aZ\x05/userb\x06proto3"
+	"\x06Logout\x12\x13.user.LogoutRequest\x1a\x14.user.LogoutResponse\x12E\n" +
+	"\fRefreshToken\x12\x19.user.RefreshTokenRequest\x1a\x1a.user.RefreshTokenResponseB\aZ\x05/userb\x06proto3"
 
 var (
 	file_idl_user_proto_rawDescOnce sync.Once
@@ -694,7 +796,7 @@ func file_idl_user_proto_rawDescGZIP() []byte {
 	return file_idl_user_proto_rawDescData
 }
 
-var file_idl_user_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_idl_user_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_idl_user_proto_goTypes = []any{
 	(*User)(nil),                  // 0: user.User
 	(*RegisterRequest)(nil),       // 1: user.RegisterRequest
@@ -709,6 +811,8 @@ var file_idl_user_proto_goTypes = []any{
 	(*ResetPasswordResponse)(nil), // 10: user.ResetPasswordResponse
 	(*LogoutRequest)(nil),         // 11: user.LogoutRequest
 	(*LogoutResponse)(nil),        // 12: user.LogoutResponse
+	(*RefreshTokenRequest)(nil),   // 13: user.RefreshTokenRequest
+	(*RefreshTokenResponse)(nil),  // 14: user.RefreshTokenResponse
 }
 var file_idl_user_proto_depIdxs = []int32{
 	0,  // 0: user.RegisterResponse.data:type_name -> user.User
@@ -720,14 +824,16 @@ var file_idl_user_proto_depIdxs = []int32{
 	7,  // 6: user.UserService.UpdateAvatar:input_type -> user.UpdateAvatarRequest
 	9,  // 7: user.UserService.ResetPassword:input_type -> user.ResetPasswordRequest
 	11, // 8: user.UserService.Logout:input_type -> user.LogoutRequest
-	2,  // 9: user.UserService.Register:output_type -> user.RegisterResponse
-	4,  // 10: user.UserService.Login:output_type -> user.LoginResponse
-	6,  // 11: user.UserService.GetUserInfo:output_type -> user.GetUserInfoResponse
-	8,  // 12: user.UserService.UpdateAvatar:output_type -> user.UpdateAvatarResponse
-	10, // 13: user.UserService.ResetPassword:output_type -> user.ResetPasswordResponse
-	12, // 14: user.UserService.Logout:output_type -> user.LogoutResponse
-	9,  // [9:15] is the sub-list for method output_type
-	3,  // [3:9] is the sub-list for method input_type
+	13, // 9: user.UserService.RefreshToken:input_type -> user.RefreshTokenRequest
+	2,  // 10: user.UserService.Register:output_type -> user.RegisterResponse
+	4,  // 11: user.UserService.Login:output_type -> user.LoginResponse
+	6,  // 12: user.UserService.GetUserInfo:output_type -> user.GetUserInfoResponse
+	8,  // 13: user.UserService.UpdateAvatar:output_type -> user.UpdateAvatarResponse
+	10, // 14: user.UserService.ResetPassword:output_type -> user.ResetPasswordResponse
+	12, // 15: user.UserService.Logout:output_type -> user.LogoutResponse
+	14, // 16: user.UserService.RefreshToken:output_type -> user.RefreshTokenResponse
+	10, // [10:17] is the sub-list for method output_type
+	3,  // [3:10] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
 	3,  // [3:3] is the sub-list for extension extendee
 	0,  // [0:3] is the sub-list for field type_name
@@ -744,7 +850,7 @@ func file_idl_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_idl_user_proto_rawDesc), len(file_idl_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

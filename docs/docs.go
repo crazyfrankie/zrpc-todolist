@@ -374,6 +374,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/refresh-token": {
+            "post": {
+                "description": "Refresh User AccessToken",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Refresh User Token",
+                "responses": {
+                    "200": {
+                        "description": "Refresh token successfully",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/register": {
             "post": {
                 "description": "Register a new user",

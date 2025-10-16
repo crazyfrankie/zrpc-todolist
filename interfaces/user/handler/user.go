@@ -30,6 +30,7 @@ func (h *UserHandler) RegisterRoute(r *gin.RouterGroup) {
 		userGroup.GET("profile", h.GetUserInfo())
 		userGroup.POST("avatar", h.UpdateAvatar())
 		userGroup.POST("reset-password", h.ResetPassword())
+		userGroup.POST("refresh-token", h.RefreshToken())
 	}
 }
 
@@ -221,6 +222,36 @@ func (h *UserHandler) ResetPassword() gin.HandlerFunc {
 			response.InternalServerError(c, err)
 			return
 		}
+
+		response.Success(c, nil)
+	}
+}
+
+// RefreshToken godoc
+// @Summary Refresh User Token
+// @Description Refresh User AccessToken
+// @Tags User
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.Response "Refresh token successfully"
+// @Failure 400 {object} response.Response "Invalid parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /user/refresh-token [post]
+func (h *UserHandler) RefreshToken() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		refresh, err := c.Cookie("zrpc-todolist-refresh")
+		if err != nil {
+			response.InvalidParamError(c, err.Error())
+			return
+		}
+
+		res, err := h.userClient.RefreshToken(c.Request.Context(), &user.RefreshTokenRequest{RefreshToken: refresh})
+		if err != nil {
+			response.InternalServerError(c, err)
+			return
+		}
+
+		response.SetAuthorization(c, res.GetAccessToken(), res.GetRefreshToken())
 
 		response.Success(c, nil)
 	}

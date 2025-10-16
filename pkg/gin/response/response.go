@@ -36,7 +36,7 @@ func InvalidParamError(c *gin.Context, message string) {
 }
 
 func Unauthorized(c *gin.Context) {
-	ginJSON(c, http.StatusUnauthorized, &Response{
+	abortGinJSON(c, http.StatusUnauthorized, &Response{
 		Code:    UnauthorizedCode,
 		Message: "unauthorized",
 	})
@@ -53,6 +53,11 @@ func Success(c *gin.Context, data any) {
 func ginJSON(c *gin.Context, code int, resp *Response) {
 	c.Set(ginApiResponseKey, resp)
 	c.JSON(code, resp)
+}
+
+func abortGinJSON(c *gin.Context, code int, resp *Response) {
+	c.Set(ginApiResponseKey, resp)
+	c.AbortWithStatusJSON(code, resp)
 }
 
 func ParseError(err error) *Response {

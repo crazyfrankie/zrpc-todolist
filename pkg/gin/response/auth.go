@@ -10,5 +10,5 @@ import (
 func SetAuthorization(c *gin.Context, access, refresh string) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.Header("x-access-token", access)
-	c.SetCookie("zrpc-todolist_refresh", refresh, int(time.Hour*24), "/", "", false, true)
+	c.SetCookie("zrpc-todolist-refresh", refresh, int(time.Hour*24), "/", "", false, true)
 }

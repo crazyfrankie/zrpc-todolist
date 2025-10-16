@@ -60,6 +60,15 @@ message LogoutRequest {}
 
 message LogoutResponse {}
 
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
 service UserService {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
@@ -67,5 +76,6 @@ service UserService {
   rpc UpdateAvatar(UpdateAvatarRequest) returns (UpdateAvatarResponse);
   rpc ResetPassword(ResetPasswordRequest) returns(ResetPasswordResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
 }
 

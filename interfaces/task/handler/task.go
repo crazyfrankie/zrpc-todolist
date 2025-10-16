@@ -18,7 +18,7 @@ func NewTaskHandler(taskClient task.TaskServiceClient) *TaskHandler {
 }
 
 func (t *TaskHandler) RegisterRoute(r *gin.RouterGroup) {
-	taskGroup := r.Group("tasks")
+	taskGroup := r.Group("task")
 	{
 		taskGroup.POST("create", t.CreateTask())
 		taskGroup.GET("list", t.ListTask())

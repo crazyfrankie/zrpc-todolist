@@ -286,6 +286,29 @@ paths:
       summary: Get user information
       tags:
       - User
+  /user/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Refresh User AccessToken
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Refresh token successfully
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "400":
+          description: Invalid parameters
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: Refresh User Token
+      tags:
+      - User
   /user/register:
     post:
       consumes:
