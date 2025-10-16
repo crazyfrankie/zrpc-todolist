@@ -31,8 +31,17 @@ message RefreshTokenResponse {
   int64 userID = 3;
 }
 
+message CleanTokenRequest {
+  int64 userID = 1;
+}
+
+message CleanTokenResponse {
+
+}
+
 service AuthService {
   rpc GenerateToken(GenerateTokenRequest) returns (GenerateTokenResponse);
   rpc ParseToken(ParseTokenRequest) returns (ParseTokenResponse);
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+  rpc CleanToken(CleanTokenRequest) returns(CleanTokenResponse);
 }

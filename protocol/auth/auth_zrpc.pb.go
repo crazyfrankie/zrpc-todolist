@@ -15,6 +15,7 @@ const (
 	AuthService_GenerateToken_FullMethodName = "auth.AuthService/GenerateToken"
 	AuthService_ParseToken_FullMethodName    = "auth.AuthService/ParseToken"
 	AuthService_RefreshToken_FullMethodName  = "auth.AuthService/RefreshToken"
+	AuthService_CleanToken_FullMethodName    = "auth.AuthService/CleanToken"
 )
 
 // AuthServiceClient is the API for AuthService service.
@@ -23,6 +24,7 @@ type AuthServiceClient interface {
 	GenerateToken(ctx context.Context, in *GenerateTokenRequest) (*GenerateTokenResponse, error)
 	ParseToken(ctx context.Context, in *ParseTokenRequest) (*ParseTokenResponse, error)
 	RefreshToken(ctx context.Context, in *RefreshTokenRequest) (*RefreshTokenResponse, error)
+	CleanToken(ctx context.Context, in *CleanTokenRequest) (*CleanTokenResponse, error)
 }
 
 type authServiceClient struct {
@@ -60,6 +62,15 @@ func (c *authServiceClient) RefreshToken(ctx context.Context, in *RefreshTokenRe
 	return out, nil
 }
 
+func (c *authServiceClient) CleanToken(ctx context.Context, in *CleanTokenRequest) (*CleanTokenResponse, error) {
+	out := new(CleanTokenResponse)
+	err := c.cli.Invoke(ctx, AuthService_CleanToken_FullMethodName, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -67,6 +78,7 @@ type AuthServiceServer interface {
 	GenerateToken(context.Context, *GenerateTokenRequest) (*GenerateTokenResponse, error)
 	ParseToken(context.Context, *ParseTokenRequest) (*ParseTokenResponse, error)
 	RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
+	CleanToken(context.Context, *CleanTokenRequest) (*CleanTokenResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -85,6 +97,9 @@ func (UnimplementedAuthServiceServer) ParseToken(context.Context, *ParseTokenReq
 }
 func (UnimplementedAuthServiceServer) RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error) {
 	return nil, fmt.Errorf("method RefreshToken not implemented")
+}
+func (UnimplementedAuthServiceServer) CleanToken(context.Context, *CleanTokenRequest) (*CleanTokenResponse, error) {
+	return nil, fmt.Errorf("method CleanToken not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -161,6 +176,24 @@ func _AuthService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec
 	return middleware(ctx, in, info, handler)
 }
 
+func _AuthService_CleanToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, middleware zrpc.ServerMiddleware) (interface{}, error) {
+	in := new(CleanTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if middleware == nil {
+		return srv.(AuthServiceServer).CleanToken(ctx, in)
+	}
+	info := &zrpc.ServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_CleanToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).CleanToken(ctx, req.(*CleanTokenRequest))
+	}
+	return middleware(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the zrpc.ServiceDesc for AuthService service.
 // It's only intended for direct use withzrpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -179,6 +212,10 @@ var AuthService_ServiceDesc = zrpc.ServiceDesc{
 		{
 			MethodName: "RefreshToken",
 			Handler:    _AuthService_RefreshToken_Handler,
+		},
+		{
+			MethodName: "CleanToken",
+			Handler:    _AuthService_CleanToken_Handler,
 		},
 	},
 	Metadata: "idl/auth.proto",

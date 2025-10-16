@@ -28,6 +28,17 @@ func (t *TaskHandler) RegisterRoute(r *gin.RouterGroup) {
 	}
 }
 
+// CreateTask godoc
+// @Summary Create a new task
+// @Description Create a new task with title and content
+// @Tags Task
+// @Accept json
+// @Produce json
+// @Param request body model.CreateTaskReq true "Create task request"
+// @Success 200 {object} response.Response "Task created successfully"
+// @Failure 400 {object} response.Response "Invalid parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /tasks/create [post]
 func (t *TaskHandler) CreateTask() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req model.CreateTaskReq
@@ -49,6 +60,14 @@ func (t *TaskHandler) CreateTask() gin.HandlerFunc {
 	}
 }
 
+// ListTask godoc
+// @Summary Get task list
+// @Description Get all tasks for current user
+// @Tags Task
+// @Produce json
+// @Success 200 {object} response.Response "Task list retrieved successfully"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /tasks/list [get]
 func (t *TaskHandler) ListTask() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		res, err := t.taskClient.ListTasks(c.Request.Context(), &task.ListTasksRequest{})
@@ -61,6 +80,14 @@ func (t *TaskHandler) ListTask() gin.HandlerFunc {
 	}
 }
 
+// RecycleListTask godoc
+// @Summary Get recycle bin task list
+// @Description Get all deleted tasks in recycle bin
+// @Tags Task
+// @Produce json
+// @Success 200 {object} response.Response "Recycle bin task list retrieved successfully"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /tasks/recycle-list [get]
 func (t *TaskHandler) RecycleListTask() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		res, err := t.taskClient.RecycleBin(c.Request.Context(), &task.RecycleBinRequest{})
@@ -73,6 +100,18 @@ func (t *TaskHandler) RecycleListTask() gin.HandlerFunc {
 	}
 }
 
+// UpdateTask godoc
+// @Summary Update task
+// @Description Update task title and content by task ID
+// @Tags Task
+// @Accept json
+// @Produce json
+// @Param id path string true "Task ID"
+// @Param request body model.UpdateTaskReq true "Update task request"
+// @Success 200 {object} response.Response "Task updated successfully"
+// @Failure 400 {object} response.Response "Invalid parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /tasks/update/{id} [put]
 func (t *TaskHandler) UpdateTask() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req model.UpdateTaskReq
@@ -97,6 +136,16 @@ func (t *TaskHandler) UpdateTask() gin.HandlerFunc {
 	}
 }
 
+// UpdateTaskStatus godoc
+// @Summary Update task status
+// @Description Update task status by task ID
+// @Tags Task
+// @Produce json
+// @Param id path string true "Task ID"
+// @Param status query int true "Task status"
+// @Success 200 {object} response.Response "Task status updated successfully"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /tasks/update/{id}/status [put]
 func (t *TaskHandler) UpdateTaskStatus() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		taskID, _ := conv.StrToInt64(c.Param("id"))

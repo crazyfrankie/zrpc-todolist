@@ -1,0 +1,354 @@
+definitions:
+  github_com_crazyfrankie_zrpc-todolist_interfaces_task_model.CreateTaskReq:
+    properties:
+      content:
+        type: string
+      title:
+        type: string
+    type: object
+  github_com_crazyfrankie_zrpc-todolist_interfaces_task_model.UpdateTaskReq:
+    properties:
+      content:
+        type: string
+      title:
+        type: string
+    type: object
+  github_com_crazyfrankie_zrpc-todolist_interfaces_user_model.UserInfoResp:
+    properties:
+      avatar:
+        type: string
+      name:
+        type: string
+      user_create_time:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  github_com_crazyfrankie_zrpc-todolist_interfaces_user_model.UserLoginReq:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  github_com_crazyfrankie_zrpc-todolist_interfaces_user_model.UserRegisterReq:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  github_com_crazyfrankie_zrpc-todolist_interfaces_user_model.UserResetPasswordReq:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /tasks/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new task with title and content
+      parameters:
+      - description: Create task request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_interfaces_task_model.CreateTaskReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task created successfully
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "400":
+          description: Invalid parameters
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: Create a new task
+      tags:
+      - Task
+  /tasks/list:
+    get:
+      description: Get all tasks for current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task list retrieved successfully
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: Get task list
+      tags:
+      - Task
+  /tasks/recycle-list:
+    get:
+      description: Get all deleted tasks in recycle bin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Recycle bin task list retrieved successfully
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: Get recycle bin task list
+      tags:
+      - Task
+  /tasks/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update task title and content by task ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update task request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_interfaces_task_model.UpdateTaskReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task updated successfully
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "400":
+          description: Invalid parameters
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: Update task
+      tags:
+      - Task
+  /tasks/update/{id}/status:
+    put:
+      description: Update task status by task ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task status
+        in: query
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task status updated successfully
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: Update task status
+      tags:
+      - Task
+  /user/avatar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload and update user avatar image
+      parameters:
+      - description: Avatar image file
+        in: formData
+        name: avatar
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Avatar updated successfully
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "400":
+          description: Invalid parameters
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: Update user avatar
+      tags:
+      - User
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: User login authentication
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_interfaces_user_model.UserLoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_interfaces_user_model.UserInfoResp'
+              type: object
+        "400":
+          description: Invalid parameters
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: User login
+      tags:
+      - User
+  /user/logout:
+    get:
+      description: User logout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logout successful
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: User logout
+      tags:
+      - User
+  /user/profile:
+    get:
+      description: Get current user profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information retrieved successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_interfaces_user_model.UserInfoResp'
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: Get user information
+      tags:
+      - User
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: Registration request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_interfaces_user_model.UserRegisterReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Registration successful
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_interfaces_user_model.UserInfoResp'
+              type: object
+        "400":
+          description: Invalid parameters
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: User registration
+      tags:
+      - User
+  /user/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Reset user password
+      parameters:
+      - description: Reset password request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_interfaces_user_model.UserResetPasswordReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password reset successfully
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "400":
+          description: Invalid parameters
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_crazyfrankie_zrpc-todolist_pkg_gin_response.Response'
+      summary: Reset user password
+      tags:
+      - User
+swagger: "2.0"

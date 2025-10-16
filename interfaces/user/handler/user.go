@@ -33,6 +33,17 @@ func (h *UserHandler) RegisterRoute(r *gin.RouterGroup) {
 	}
 }
 
+// Register godoc
+// @Summary User registration
+// @Description Register a new user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param request body model.UserRegisterReq true "Registration request"
+// @Success 200 {object} response.Response{data=model.UserInfoResp} "Registration successful"
+// @Failure 400 {object} response.Response "Invalid parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /user/register [post]
 func (h *UserHandler) Register() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req model.UserRegisterReq
@@ -56,6 +67,17 @@ func (h *UserHandler) Register() gin.HandlerFunc {
 	}
 }
 
+// Login godoc
+// @Summary User login
+// @Description User login authentication
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param request body model.UserLoginReq true "Login request"
+// @Success 200 {object} response.Response{data=model.UserInfoResp} "Login successful"
+// @Failure 400 {object} response.Response "Invalid parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /user/login [post]
 func (h *UserHandler) Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req model.UserLoginReq
@@ -79,6 +101,14 @@ func (h *UserHandler) Login() gin.HandlerFunc {
 	}
 }
 
+// Logout godoc
+// @Summary User logout
+// @Description User logout
+// @Tags User
+// @Produce json
+// @Success 200 {object} response.Response "Logout successful"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /user/logout [get]
 func (h *UserHandler) Logout() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		_, err := h.userClient.Logout(c.Request.Context(), &user.LogoutRequest{})
@@ -91,6 +121,14 @@ func (h *UserHandler) Logout() gin.HandlerFunc {
 	}
 }
 
+// GetUserInfo godoc
+// @Summary Get user information
+// @Description Get current user profile information
+// @Tags User
+// @Produce json
+// @Success 200 {object} response.Response{data=model.UserInfoResp} "User information retrieved successfully"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /user/profile [get]
 func (h *UserHandler) GetUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		res, err := h.userClient.GetUserInfo(c.Request.Context(), &user.GetUserInfoRequest{})
@@ -103,6 +141,17 @@ func (h *UserHandler) GetUserInfo() gin.HandlerFunc {
 	}
 }
 
+// UpdateAvatar godoc
+// @Summary Update user avatar
+// @Description Upload and update user avatar image
+// @Tags User
+// @Accept multipart/form-data
+// @Produce json
+// @Param avatar formData file true "Avatar image file"
+// @Success 200 {object} response.Response "Avatar updated successfully"
+// @Failure 400 {object} response.Response "Invalid parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /user/avatar [post]
 func (h *UserHandler) UpdateAvatar() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		file, err := c.FormFile("avatar")
@@ -145,6 +194,17 @@ func (h *UserHandler) UpdateAvatar() gin.HandlerFunc {
 	}
 }
 
+// ResetPassword godoc
+// @Summary Reset user password
+// @Description Reset user password
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param request body model.UserResetPasswordReq true "Reset password request"
+// @Success 200 {object} response.Response "Password reset successfully"
+// @Failure 400 {object} response.Response "Invalid parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /user/reset-password [post]
 func (h *UserHandler) ResetPassword() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req model.UserResetPasswordReq

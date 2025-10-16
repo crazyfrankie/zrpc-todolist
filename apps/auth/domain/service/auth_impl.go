@@ -44,3 +44,7 @@ func (a *authImpl) RefreshToken(ctx context.Context, refreshToken string) ([]str
 
 	return tokens, userID, nil
 }
+
+func (a *authImpl) CleanToken(ctx context.Context, userID int64) error {
+	return a.TokenGen.CleanToken(ctx, userID)
+}

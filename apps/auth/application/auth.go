@@ -49,3 +49,12 @@ func (a *AuthApplicationService) RefreshToken(ctx context.Context, req *auth.Ref
 		UserID:       userID,
 	}, nil
 }
+
+func (a *AuthApplicationService) CleanToken(ctx context.Context, req *auth.CleanTokenRequest) (*auth.CleanTokenResponse, error) {
+	err := a.authDomain.CleanToken(ctx, req.GetUserID())
+	if err != nil {
+		return nil, err
+	}
+
+	return &auth.CleanTokenResponse{}, nil
+}

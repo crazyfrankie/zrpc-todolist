@@ -128,8 +128,14 @@ func (u *UserApplicationService) ResetPassword(ctx context.Context, req *user.Re
 }
 
 func (u *UserApplicationService) Logout(ctx context.Context, req *user.LogoutRequest) (*user.LogoutResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	userID := ctxutil.MustGetUserIDFromCtx(ctx)
+
+	_, err := u.authClient.CleanToken(ctx, &auth.CleanTokenRequest{UserID: userID})
+	if err != nil {
+		return nil, err
+	}
+
+	return &user.LogoutResponse{}, nil
 }
 
 func userDO2DTO(userDo *entity.User) *user.User {
