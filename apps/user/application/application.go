@@ -37,7 +37,7 @@ func Init(ctx context.Context) (*BasicServices, error) {
 
 	cacheCli := redis.New()
 
-	basic.IDGen, err = idgenimpl.New(cacheCli)
+	basic.IDGen, err = idgenimpl.New(cacheCli, consts.UserServiceName)
 	if err != nil {
 		return nil, err
 	}

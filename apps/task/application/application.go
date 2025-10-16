@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 
+	"github.com/crazyfrankie/zrpc-todolist/types/consts"
 	"gorm.io/gorm"
 
 	"github.com/crazyfrankie/zrpc-todolist/infra/contract/idgen"
@@ -27,7 +28,7 @@ func Init(ctx context.Context) (*BasicServices, error) {
 
 	cacheCli := redis.New()
 
-	basic.IDGen, err = idgenimpl.New(cacheCli)
+	basic.IDGen, err = idgenimpl.New(cacheCli, consts.TaskServiceName)
 	if err != nil {
 		return nil, err
 	}

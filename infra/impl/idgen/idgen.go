@@ -16,10 +16,11 @@ const (
 
 type IDGenerator = idgen.IDGenerator
 
-func New(client cache.Cmdable) (idgen.IDGenerator, error) {
+func New(client cache.Cmdable, ns string) (idgen.IDGenerator, error) {
 	// Initialization code.
 	return &idGenImpl{
-		cli: client,
+		cli:       client,
+		namespace: ns,
 	}, nil
 }
 
