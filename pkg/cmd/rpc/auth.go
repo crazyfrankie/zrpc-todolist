@@ -40,10 +40,10 @@ func (a *AuthCmd) runE() error {
 	listenPort := os.Getenv("LISTEN_PORT")
 	registryIP := os.Getenv("REGISTRY_IP")
 
-	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, "", registryIP, consts.AuthServiceName, auth.Start, authGrpcServerOption()...)
+	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, "", registryIP, consts.AuthServiceName, auth.Start, authZrpcServerOption()...)
 }
 
-func authGrpcServerOption() []zrpc.ServerOption {
+func authZrpcServerOption() []zrpc.ServerOption {
 	return []zrpc.ServerOption{
 		zrpc.WithChainMiddleware([]zrpc.ServerMiddleware{interceptor.CtxMDInterceptor(), interceptor.ResponseInterceptor()}),
 	}

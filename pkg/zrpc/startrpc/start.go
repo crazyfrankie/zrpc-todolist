@@ -83,9 +83,9 @@ func Start(ctx context.Context, listenIP, registerIP, listenPort, metricAddr, re
 
 				select {
 				case <-done:
-					logs.CtxInfof(ctx, "gRPC server stopped gracefully")
+					logs.CtxInfof(ctx, "zRPC server stopped gracefully")
 				case <-stopCtx.Done():
-					logs.CtxWarnf(ctx, "gRPC server graceful stop timeout, forcing shutdown")
+					logs.CtxWarnf(ctx, "zRPC server graceful stop timeout, forcing shutdown")
 					rpcServer.Stop()
 				}
 			}

@@ -43,10 +43,10 @@ func (u *UserCmd) runE() error {
 
 	//metrics.RegistryUser()
 
-	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, "", registryIP, consts.UserServiceName, user.Start, userGrpcServerOption()...)
+	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, "", registryIP, consts.UserServiceName, user.Start, userZrpcServerOption()...)
 }
 
-func userGrpcServerOption() []zrpc.ServerOption {
+func userZrpcServerOption() []zrpc.ServerOption {
 	return []zrpc.ServerOption{
 		zrpc.WithChainMiddleware([]zrpc.ServerMiddleware{interceptor.CtxMDInterceptor(), interceptor.ResponseInterceptor()}),
 	}
