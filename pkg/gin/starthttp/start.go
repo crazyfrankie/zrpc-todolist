@@ -33,8 +33,8 @@ type Config struct {
 	RegistryIP      string
 	ShutdownTimeout time.Duration
 
-	MetricAddr   string
-	CollectorURL string
+	MetricAddr    string
+	CollectorAddr string
 
 	InitFunc func(ctx context.Context, getConn func(service string) (zrpc.ClientInterface, error), middlewares ...gin.HandlerFunc) (http.Handler, error)
 }
@@ -81,8 +81,8 @@ func Start(ctx context.Context, cfg *Config) error {
 		middleware.Metric(),
 	}
 
-	if cfg.CollectorURL != "" {
-		traceProvider, err := tracing.GetTraceProvider(cfg.ServiceName, cfg.ServiceVer, cfg.CollectorURL)
+	if cfg.CollectorAddr != "" {
+		traceProvider, err := tracing.GetTraceProvider(cfg.ServiceName, cfg.ServiceVer, cfg.CollectorAddr)
 		if err != nil {
 			return err
 		}
