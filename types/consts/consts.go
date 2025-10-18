@@ -14,3 +14,18 @@ const (
 const (
 	UserIconURI = "default_icon/user_default_icon.png"
 )
+
+const (
+	UserServiceName = "zrpc-todolist-rpc-user"
+	TaskServiceName = "zrpc-todolist-rpc-task"
+	AuthServiceName = "zrpc-todolist-rpc-auth"
+
+	UserApiName = "zrpc-todolist-api-user"
+	TaskApiName = "zrpc-todolist-api-task"
+
+	UserServiceVer = "v0.0.1"
+	TaskServiceVer = "v0.0.1"
+	AuthServiceVer = "v0.0.1"
+	UserApiVer     = "v0.0.1"
+	TaskApiVer     = "v0.0.1"
+)

@@ -20,7 +20,7 @@ type TaskCmd struct {
 
 func NewTaskCmd() *TaskCmd {
 	taskCmd := &TaskCmd{
-		RootCmd: cmd.NewRootCmd(program.GetProcessName(), consts.UserApiName),
+		RootCmd: cmd.NewRootCmd(program.GetProcessName(), consts.TaskApiName),
 	}
 	taskCmd.Command.RunE = func(cmd *cobra.Command, args []string) error {
 		return taskCmd.runE()
@@ -36,6 +36,10 @@ func (u *TaskCmd) Exec() error {
 func (u *TaskCmd) runE() error {
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	//metricAddr := os.Getenv("METRIC_ADDR")
+	collectorUrl := os.Getenv("COLLECTOR_URL")
+	registryIP := os.Getenv("REGISTRY_IP")
 
-	return starthttp.Start(context.Background(), listenAddr, "", task.Start, time.Second*5)
+	return starthttp.Start(context.Background(), listenAddr, "", collectorUrl,
+		consts.TaskApiName, consts.TaskApiVer, registryIP,
+		time.Second*5, task.Start)
 }
