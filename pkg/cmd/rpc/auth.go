@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/crazyfrankie/zrpc"
+	"github.com/crazyfrankie/zrpc/contrib/tracing"
 	"github.com/spf13/cobra"
 
-	"github.com/crazyfrankie/zrpc-todolist/apps/auth"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/cmd"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/lang/program"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/zrpc/interceptor"
@@ -35,16 +35,25 @@ func (a *AuthCmd) Exec() error {
 }
 
 func (a *AuthCmd) runE() error {
-	listenIP := os.Getenv("LISTEN_IP")
-	registerIP := os.Getenv("REGISTER_IP")
-	listenPort := os.Getenv("LISTEN_PORT")
-	registryIP := os.Getenv("REGISTRY_IP")
+	cfg := &startrpc.Config{
+		ListenIP:        os.Getenv("LISTEN_IP"),
+		ListenPort:      os.Getenv("LISTEN_PORT"),
+		RegisterIP:      os.Getenv("REGISTER_IP"),
+		RegistryIP:      os.Getenv("REGISTRY_IP"),
+		RPCRegisterName: consts.AuthServiceName,
+		RPCServiceVer:   consts.AuthServiceVer,
+		MetricAddr:      "",
+		CollectorAddr:   os.Getenv("COLLECTOR_URL"),
+		ServerOpts:      authZrpcServerOption(),
+		RPCStart:        nil,
+	}
 
-	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, "", registryIP, consts.AuthServiceName, auth.Start, authZrpcServerOption()...)
+	return startrpc.Start(context.Background(), cfg)
 }
 
 func authZrpcServerOption() []zrpc.ServerOption {
 	return []zrpc.ServerOption{
+		zrpc.WithStatsHandler(tracing.NewServerHandler()),
 		zrpc.WithChainMiddleware([]zrpc.ServerMiddleware{interceptor.CtxMDInterceptor(), interceptor.ResponseInterceptor()}),
 	}
 }

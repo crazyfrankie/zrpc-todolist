@@ -9,24 +9,36 @@ import (
 	"time"
 
 	"github.com/crazyfrankie/zrpc"
+	"github.com/gin-gonic/gin"
+	"github.com/oklog/run"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"go.opentelemetry.io/otel/propagation"
+
 	"github.com/crazyfrankie/zrpc-todolist/pkg/gin/middleware"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/lang/signal"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/logs"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/metrics"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/tracing"
-	"github.com/gin-gonic/gin"
-	"github.com/oklog/run"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
-	"go.opentelemetry.io/otel/propagation"
 )
 
 func init() {
 	metrics.RegisterBFF()
 }
 
-func Start(ctx context.Context, listenAddr, metricAddr, collectorUrl, serviceName, serviceVersion, registryIP string, shutdownTimeout time.Duration,
-	initFn func(ctx context.Context, getConn func(service string) (zrpc.ClientInterface, error),
-		middlewares ...gin.HandlerFunc) (http.Handler, error)) error {
+type Config struct {
+	ListenAddr      string
+	ServiceName     string
+	ServiceVer      string
+	RegistryIP      string
+	ShutdownTimeout time.Duration
+
+	MetricAddr   string
+	CollectorURL string
+
+	InitFunc func(ctx context.Context, getConn func(service string) (zrpc.ClientInterface, error), middlewares ...gin.HandlerFunc) (http.Handler, error)
+}
+
+func Start(ctx context.Context, cfg *Config) error {
 	g := &run.Group{}
 
 	// Signal handler
@@ -36,9 +48,9 @@ func Start(ctx context.Context, listenAddr, metricAddr, collectorUrl, serviceNam
 
 	})
 
-	if metricAddr != "" {
+	if cfg.MetricAddr != "" {
 		g.Add(func() error {
-			listener, err := net.Listen("tcp", metricAddr)
+			listener, err := net.Listen("tcp", cfg.MetricAddr)
 			if err != nil {
 				return err
 			}
@@ -57,35 +69,38 @@ func Start(ctx context.Context, listenAddr, metricAddr, collectorUrl, serviceNam
 			zrpc.DialWithIdleTimeout(30 * time.Second),
 			zrpc.DialWithHeartbeatInterval(40 * time.Second),
 			zrpc.DialWithHeartbeatTimeout(5 * time.Second),
-			zrpc.DialWithRegistryAddress(registryIP),
+			zrpc.DialWithRegistryAddress(cfg.RegistryIP),
 		}
 
 		return zrpc.NewClient(target, clientOptions...)
 	}
 
-	traceProvider, err := tracing.GetTraceProvider(serviceName, serviceVersion, collectorUrl)
-	if err != nil {
-		return err
+	middlewares := []gin.HandlerFunc{
+		middleware.Metric(),
 	}
 
-	middlewares := []gin.HandlerFunc{
-		middleware.Trace(serviceName,
+	if cfg.CollectorURL != "" {
+		traceProvider, err := tracing.GetTraceProvider(cfg.ServiceName, cfg.ServiceVer, cfg.CollectorURL)
+		if err != nil {
+			return err
+		}
+
+		middlewares = append([]gin.HandlerFunc{middleware.Trace(cfg.ServiceName,
 			otelgin.WithTracerProvider(traceProvider),
 			otelgin.WithPropagators(propagation.NewCompositeTextMapPropagator(
 				propagation.TraceContext{},
 				propagation.Baggage{},
 			)),
-		),
-		middleware.Metric(),
+		)}, middlewares...)
 	}
 
-	engine, err := initFn(ctx, getConn, middlewares...)
+	engine, err := cfg.InitFunc(ctx, getConn, middlewares...)
 	if err != nil {
 		return err
 	}
 
 	srv := &http.Server{
-		Addr:    listenAddr,
+		Addr:    cfg.ListenAddr,
 		Handler: engine,
 	}
 
@@ -95,7 +110,7 @@ func Start(ctx context.Context, listenAddr, metricAddr, collectorUrl, serviceNam
 		}
 		return nil
 	}, func(err error) {
-		shutdownCtx, cancel := context.WithTimeout(ctx, shutdownTimeout)
+		shutdownCtx, cancel := context.WithTimeout(ctx, cfg.ShutdownTimeout)
 		defer cancel()
 		if err := srv.Shutdown(shutdownCtx); err != nil {
 			logs.Errorf("failed to shutdown main server: %v", err)

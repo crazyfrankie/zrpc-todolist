@@ -7,19 +7,35 @@ import (
 	"time"
 
 	"github.com/crazyfrankie/zrpc"
+	"github.com/crazyfrankie/zrpc-todolist/pkg/tracing"
 	"github.com/crazyfrankie/zrpc/registry"
 	"github.com/oklog/run"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 
 	"github.com/crazyfrankie/zrpc-todolist/pkg/lang/signal"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/logs"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/metrics"
 )
 
-func Start(ctx context.Context, listenIP, registerIP, listenPort, metricAddr, registryIP, rpcRegisterName string,
-	rpcStart func(ctx context.Context, srv zrpc.ServiceRegistrar) error,
-	opts ...zrpc.ServerOption) error {
+type Config struct {
+	ListenIP        string
+	ListenPort      string
+	RegisterIP      string
+	RegistryIP      string
+	RPCRegisterName string
+	RPCServiceVer   string
 
-	client := registry.NewTcpClient(registryIP)
+	MetricAddr    string
+	CollectorAddr string
+
+	ServerOpts []zrpc.ServerOption
+
+	RPCStart func(ctx context.Context, srv zrpc.ServiceRegistrar) error
+}
+
+func Start(ctx context.Context, cfg *Config) error {
+	client := registry.NewTcpClient(cfg.RegistryIP)
 
 	g := &run.Group{}
 
@@ -31,9 +47,9 @@ func Start(ctx context.Context, listenIP, registerIP, listenPort, metricAddr, re
 	})
 
 	// Prometheus metrics server
-	if metricAddr != "" {
+	if cfg.MetricAddr != "" {
 		g.Add(func() error {
-			listener, err := net.Listen("tcp", metricAddr)
+			listener, err := net.Listen("tcp", cfg.MetricAddr)
 			if err != nil {
 				return err
 			}
@@ -49,22 +65,34 @@ func Start(ctx context.Context, listenIP, registerIP, listenPort, metricAddr, re
 		rpcServer *zrpc.Server
 	)
 
+	if cfg.CollectorAddr != "" {
+		traceProvider, err := tracing.GetTraceProvider(cfg.RPCRegisterName, cfg.RPCServiceVer, cfg.CollectorAddr)
+		if err != nil {
+			return err
+		}
+		otel.SetTracerProvider(traceProvider)
+		otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
+			propagation.TraceContext{},
+			propagation.Baggage{},
+		))
+	}
+
 	onRegisterService := func(desc *zrpc.ServiceDesc, impl any) {
 		if rpcServer != nil {
 			rpcServer.RegisterService(desc, impl)
 			return
 		}
 
-		rpcListenAddr := net.JoinHostPort(listenIP, listenPort)
+		rpcListenAddr := net.JoinHostPort(cfg.ListenIP, cfg.ListenPort)
 
-		rpcServer = zrpc.NewServer(opts...)
+		rpcServer = zrpc.NewServer(cfg.ServerOpts...)
 		rpcServer.RegisterService(desc, impl)
-		logs.CtxDebugf(ctx, "rpc start register, rpcRegisterName: %s, registerIP: %s, listenPort: %s", rpcRegisterName, registerIP, listenPort)
+		logs.CtxDebugf(ctx, "rpc start register, rpcRegisterName: %s, registerIP: %s, listenPort: %s", cfg.RPCRegisterName, cfg.RegisterIP, cfg.ListenPort)
 
 		g.Add(func() error {
 			// Register service
-			if err := client.RegisterWithKeepAlive(rpcRegisterName, rpcListenAddr, nil, 120); err != nil {
-				return fmt.Errorf("rpc register %s: %w", rpcRegisterName, err)
+			if err := client.RegisterWithKeepAlive(cfg.RPCRegisterName, rpcListenAddr, nil, 120); err != nil {
+				return fmt.Errorf("rpc register %s: %w", cfg.RPCRegisterName, err)
 			}
 
 			// Start serving
@@ -92,7 +120,7 @@ func Start(ctx context.Context, listenIP, registerIP, listenPort, metricAddr, re
 		})
 	}
 
-	if err := rpcStart(ctx, &zrpcServiceRegistrar{onRegisterService: onRegisterService}); err != nil {
+	if err := cfg.RPCStart(ctx, &zrpcServiceRegistrar{onRegisterService: onRegisterService}); err != nil {
 		return err
 	}
 

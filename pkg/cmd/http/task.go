@@ -34,12 +34,16 @@ func (u *TaskCmd) Exec() error {
 }
 
 func (u *TaskCmd) runE() error {
-	listenAddr := os.Getenv("LISTEN_ADDR")
-	//metricAddr := os.Getenv("METRIC_ADDR")
-	collectorUrl := os.Getenv("COLLECTOR_URL")
-	registryIP := os.Getenv("REGISTRY_IP")
+	cfg := &starthttp.Config{
+		ListenAddr:      os.Getenv("LISTEN_ADDR"),
+		ServiceName:     consts.TaskApiName,
+		ServiceVer:      consts.TaskApiVer,
+		RegistryIP:      os.Getenv("REGISTRY_IP"),
+		ShutdownTimeout: time.Second * 5,
+		MetricAddr:      "",
+		CollectorURL:    os.Getenv("COLLECTOR_URL"),
+		InitFunc:        task.Start,
+	}
 
-	return starthttp.Start(context.Background(), listenAddr, "", collectorUrl,
-		consts.TaskApiName, consts.TaskApiVer, registryIP,
-		time.Second*5, task.Start)
+	return starthttp.Start(context.Background(), cfg)
 }

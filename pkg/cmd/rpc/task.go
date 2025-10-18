@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/crazyfrankie/zrpc"
+	"github.com/crazyfrankie/zrpc/contrib/tracing"
 	"github.com/spf13/cobra"
 
-	"github.com/crazyfrankie/zrpc-todolist/apps/task"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/cmd"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/lang/program"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/zrpc/interceptor"
@@ -35,19 +35,25 @@ func (u *TaskCmd) Exec() error {
 }
 
 func (u *TaskCmd) runE() error {
-	listenIP := os.Getenv("LISTEN_IP")
-	registerIP := os.Getenv("REGISTER_IP")
-	listenPort := os.Getenv("LISTEN_PORT")
-	// metricAddr := os.Getenv("METRIC_ADDR")
-	registryIP := os.Getenv("REGISTRY_IP")
+	cfg := &startrpc.Config{
+		ListenIP:        os.Getenv("LISTEN_IP"),
+		ListenPort:      os.Getenv("LISTEN_PORT"),
+		RegisterIP:      os.Getenv("REGISTER_IP"),
+		RegistryIP:      os.Getenv("REGISTRY_IP"),
+		RPCRegisterName: consts.TaskServiceName,
+		RPCServiceVer:   consts.TaskServiceVer,
+		MetricAddr:      "",
+		CollectorAddr:   os.Getenv("COLLECTOR_URL"),
+		ServerOpts:      taskZrpcServerOption(),
+		RPCStart:        nil,
+	}
 
-	//metrics.RegistryUser()
-
-	return startrpc.Start(context.Background(), listenIP, registerIP, listenPort, "", registryIP, consts.TaskServiceName, task.Start, taskZrpcServerOption()...)
+	return startrpc.Start(context.Background(), cfg)
 }
 
 func taskZrpcServerOption() []zrpc.ServerOption {
 	return []zrpc.ServerOption{
+		zrpc.WithStatsHandler(tracing.NewServerHandler()),
 		zrpc.WithChainMiddleware([]zrpc.ServerMiddleware{interceptor.CtxMDInterceptor(), interceptor.ResponseInterceptor()}),
 	}
 }
