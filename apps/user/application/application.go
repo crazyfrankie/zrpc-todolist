@@ -2,9 +2,6 @@ package application
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"time"
 
 	"github.com/crazyfrankie/zrpc"
 	"gorm.io/gorm"
@@ -26,7 +23,7 @@ type BasicServices struct {
 	AuthCli auth.AuthServiceClient
 }
 
-func Init(ctx context.Context) (*BasicServices, error) {
+func Init(ctx context.Context, getConn func(service string) (zrpc.ClientInterface, error)) (*BasicServices, error) {
 	basic := &BasicServices{}
 	var err error
 
@@ -55,20 +52,4 @@ func Init(ctx context.Context) (*BasicServices, error) {
 	}
 
 	return basic, nil
-}
-
-func getConn(serviceName string) (zrpc.ClientInterface, error) {
-	target := fmt.Sprintf("registry:///%s", serviceName)
-
-	registryIP := os.Getenv("REGISTRY_IP")
-
-	clientOptions := []zrpc.ClientOption{
-		zrpc.DialWithTCPKeepAlive(15 * time.Second),
-		zrpc.DialWithIdleTimeout(30 * time.Second),
-		zrpc.DialWithHeartbeatInterval(30 * time.Second),
-		zrpc.DialWithHeartbeatTimeout(5 * time.Second),
-		zrpc.DialWithRegistryAddress(registryIP),
-	}
-
-	return zrpc.NewClient(target, clientOptions...)
 }

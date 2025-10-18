@@ -61,8 +61,8 @@ func (h *AuthnHandler) Auth() gin.HandlerFunc {
 	}
 }
 
-func (h *AuthnHandler) storeUserInfo(ctx context.Context, md metadata.MD) context.Context {
-	return metadata.NewOutgoingContext(ctx, md)
+func (h *AuthnHandler) storeUserInfo(c *gin.Context, md metadata.MD) context.Context {
+	return metadata.NewOutgoingContext(c.Request.Context(), md)
 }
 
 func getAccessToken(c *gin.Context) (string, error) {

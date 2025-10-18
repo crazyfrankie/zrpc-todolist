@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/crazyfrankie/zrpc"
+	"github.com/crazyfrankie/zrpc-todolist/apps/task"
 	"github.com/crazyfrankie/zrpc/contrib/tracing"
 	"github.com/spf13/cobra"
 
@@ -43,9 +44,9 @@ func (u *TaskCmd) runE() error {
 		RPCRegisterName: consts.TaskServiceName,
 		RPCServiceVer:   consts.TaskServiceVer,
 		MetricAddr:      "",
-		CollectorAddr:   os.Getenv("COLLECTOR_URL"),
+		CollectorAddr:   os.Getenv("COLLECTOR_ADDR"),
 		ServerOpts:      taskZrpcServerOption(),
-		RPCStart:        nil,
+		RPCStart:        task.Start,
 	}
 
 	return startrpc.Start(context.Background(), cfg)

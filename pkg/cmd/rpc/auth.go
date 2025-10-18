@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/crazyfrankie/zrpc"
+	"github.com/crazyfrankie/zrpc-todolist/apps/auth"
 	"github.com/crazyfrankie/zrpc/contrib/tracing"
 	"github.com/spf13/cobra"
 
@@ -43,9 +44,9 @@ func (a *AuthCmd) runE() error {
 		RPCRegisterName: consts.AuthServiceName,
 		RPCServiceVer:   consts.AuthServiceVer,
 		MetricAddr:      "",
-		CollectorAddr:   os.Getenv("COLLECTOR_URL"),
+		CollectorAddr:   os.Getenv("COLLECTOR_ADDR"),
 		ServerOpts:      authZrpcServerOption(),
-		RPCStart:        nil,
+		RPCStart:        auth.Start,
 	}
 
 	return startrpc.Start(context.Background(), cfg)

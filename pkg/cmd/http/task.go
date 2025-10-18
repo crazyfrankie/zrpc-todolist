@@ -41,7 +41,7 @@ func (u *TaskCmd) runE() error {
 		RegistryIP:      os.Getenv("REGISTRY_IP"),
 		ShutdownTimeout: time.Second * 5,
 		MetricAddr:      "",
-		CollectorURL:    os.Getenv("COLLECTOR_URL"),
+		CollectorAddr:   os.Getenv("COLLECTOR_ADDR"),
 		InitFunc:        task.Start,
 	}
 

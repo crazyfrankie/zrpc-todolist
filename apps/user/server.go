@@ -10,8 +10,8 @@ import (
 	"github.com/crazyfrankie/zrpc-todolist/protocol/user"
 )
 
-func Start(ctx context.Context, srv zrpc.ServiceRegistrar) error {
-	basic, err := application.Init(ctx)
+func Start(ctx context.Context, srv zrpc.ServiceRegistrar, getConn func(service string) (zrpc.ClientInterface, error)) error {
+	basic, err := application.Init(ctx, getConn)
 	if err != nil {
 		return err
 	}

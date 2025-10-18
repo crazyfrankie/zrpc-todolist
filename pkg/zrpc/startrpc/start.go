@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 	"time"
 
 	"github.com/crazyfrankie/zrpc"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/tracing"
+	zrpctracing "github.com/crazyfrankie/zrpc/contrib/tracing"
 	"github.com/crazyfrankie/zrpc/registry"
 	"github.com/oklog/run"
 	"go.opentelemetry.io/otel"
@@ -31,7 +33,7 @@ type Config struct {
 
 	ServerOpts []zrpc.ServerOption
 
-	RPCStart func(ctx context.Context, srv zrpc.ServiceRegistrar) error
+	RPCStart func(ctx context.Context, srv zrpc.ServiceRegistrar, getConn func(service string) (zrpc.ClientInterface, error)) error
 }
 
 func Start(ctx context.Context, cfg *Config) error {
@@ -77,6 +79,23 @@ func Start(ctx context.Context, cfg *Config) error {
 		))
 	}
 
+	getConn := func(service string) (zrpc.ClientInterface, error) {
+		target := fmt.Sprintf("registry:///%s", service)
+
+		registryIP := os.Getenv("REGISTRY_IP")
+
+		clientOptions := []zrpc.ClientOption{
+			zrpc.DialWithTCPKeepAlive(15 * time.Second),
+			zrpc.DialWithIdleTimeout(30 * time.Second),
+			zrpc.DialWithHeartbeatInterval(30 * time.Second),
+			zrpc.DialWithHeartbeatTimeout(5 * time.Second),
+			zrpc.DialWithRegistryAddress(registryIP),
+			zrpc.DialWithStatsHandler(zrpctracing.NewClientHandler()),
+		}
+
+		return zrpc.NewClient(target, clientOptions...)
+	}
+
 	onRegisterService := func(desc *zrpc.ServiceDesc, impl any) {
 		if rpcServer != nil {
 			rpcServer.RegisterService(desc, impl)
@@ -120,7 +139,7 @@ func Start(ctx context.Context, cfg *Config) error {
 		})
 	}
 
-	if err := cfg.RPCStart(ctx, &zrpcServiceRegistrar{onRegisterService: onRegisterService}); err != nil {
+	if err := cfg.RPCStart(ctx, &zrpcServiceRegistrar{onRegisterService: onRegisterService}, getConn); err != nil {
 		return err
 	}
 

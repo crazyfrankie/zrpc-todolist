@@ -3,8 +3,8 @@ module github.com/crazyfrankie/zrpc-todolist
 go 1.25.1
 
 require (
-	github.com/crazyfrankie/zrpc v1.3.5
-	github.com/crazyfrankie/zrpc/contrib/tracing v0.0.0-20251018162540-591f7f0a2f6c
+	github.com/crazyfrankie/zrpc v1.3.7
+	github.com/crazyfrankie/zrpc/contrib/tracing v0.0.0-20251018175121-2fc58bbf99ba
 	github.com/gin-gonic/gin v1.11.0
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/joho/godotenv v1.5.1

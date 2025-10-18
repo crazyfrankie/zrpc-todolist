@@ -11,7 +11,7 @@ import (
 	"github.com/crazyfrankie/zrpc-todolist/protocol/task"
 )
 
-func Start(ctx context.Context, srv zrpc.ServiceRegistrar) error {
+func Start(ctx context.Context, srv zrpc.ServiceRegistrar, getConn func(service string) (zrpc.ClientInterface, error)) error {
 	basic, err := application.Init(ctx)
 	if err != nil {
 		return err

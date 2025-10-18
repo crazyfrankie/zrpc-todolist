@@ -9,9 +9,10 @@ import (
 	"time"
 
 	"github.com/crazyfrankie/zrpc"
+	zrpctracing "github.com/crazyfrankie/zrpc/contrib/tracing"
 	"github.com/gin-gonic/gin"
 	"github.com/oklog/run"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 
 	"github.com/crazyfrankie/zrpc-todolist/pkg/gin/middleware"
@@ -70,6 +71,7 @@ func Start(ctx context.Context, cfg *Config) error {
 			zrpc.DialWithHeartbeatInterval(40 * time.Second),
 			zrpc.DialWithHeartbeatTimeout(5 * time.Second),
 			zrpc.DialWithRegistryAddress(cfg.RegistryIP),
+			zrpc.DialWithStatsHandler(zrpctracing.NewClientHandler()),
 		}
 
 		return zrpc.NewClient(target, clientOptions...)
@@ -85,13 +87,13 @@ func Start(ctx context.Context, cfg *Config) error {
 			return err
 		}
 
-		middlewares = append([]gin.HandlerFunc{middleware.Trace(cfg.ServiceName,
-			otelgin.WithTracerProvider(traceProvider),
-			otelgin.WithPropagators(propagation.NewCompositeTextMapPropagator(
-				propagation.TraceContext{},
-				propagation.Baggage{},
-			)),
-		)}, middlewares...)
+		otel.SetTracerProvider(traceProvider)
+		otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
+			propagation.TraceContext{},
+			propagation.Baggage{},
+		))
+
+		middlewares = append([]gin.HandlerFunc{middleware.Trace(cfg.ServiceName)}, middlewares...)
 	}
 
 	engine, err := cfg.InitFunc(ctx, getConn, middlewares...)
