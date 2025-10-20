@@ -5,10 +5,10 @@ import (
 	"os"
 
 	"github.com/crazyfrankie/zrpc"
-	"github.com/crazyfrankie/zrpc-todolist/apps/auth"
 	"github.com/crazyfrankie/zrpc/contrib/tracing"
 	"github.com/spf13/cobra"
 
+	"github.com/crazyfrankie/zrpc-todolist/apps/auth"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/cmd"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/lang/program"
 	"github.com/crazyfrankie/zrpc-todolist/pkg/zrpc/interceptor"
