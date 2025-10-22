@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/crazyfrankie/zrpc"
+
 	"github.com/crazyfrankie/zrpc-todolist/apps/user/application"
 	"github.com/crazyfrankie/zrpc-todolist/apps/user/domain/repository"
 	"github.com/crazyfrankie/zrpc-todolist/apps/user/domain/service"
